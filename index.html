@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Tower of Hanoi - team 5</title>
+        <style>
+            .game-container {
+                display: flex;
+                justify-content: space-between;
+                margin: 0 auto;
+                max-width: 600px;
+            }
+
+            .tower-container {
+                position: relative;
+            }
+
+            .tower {
+                width: 100px;
+                height: 120px;
+                display: flex;
+                flex-direction: column-reverse;
+                align-items: center;
+                border-bottom: 8px solid darkred;
+            }
+
+            .tower-container::before {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 8px;
+                height: 120px;
+                z-index: -10;
+                background-color: darkred;
+            }
+
+            .disk {
+                width: 20px;
+                height: 20px;
+                background-color: blue;
+                border: 4px solid gray;
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="app"></div>
+
+        <script>
+            // model
+            //   hvor er diskene, 0 = venstre tårn, 1 = midten, 2 = høyre
+            //   alle starter til venstre
+            let smallDisk = `<div class="disk" id = "small" style="width: 30px"></div>`;
+            let mediumDisk = `<div class="disk" id = "medium" style="width: 50px"></div>`;
+            let largeDisk = `<div class="disk" id = "large" style="width: 70px"></div>`;
+
+            let smallDiskTowerIndex = 0;
+            let mediumDiskTowerIndex = 0;
+            let largeDiskTowerIndex = 0;
+
+            // view
+            updateView();
+            function updateView() {
+                document.getElementById("app").innerHTML = /*HTML*/ `
+                <div class="game-container">
+                    <div class="tower-container">
+                            <div class="tower" id = "firstTower">
+                            ${largeDisk}
+                            ${mediumDisk}
+                            ${smallDisk}                    
+                        </div>
+                    </div>
+                    <div class="tower-container">
+                        <div class="tower" id = "secondTower">
+                            
+                         </div>
+                    </div>
+                    <div class="tower-container">
+                        <div class="tower" id = "thirdTower">                    
+                        </div>
+                    </div>
+                </div>
+                
+                <br>
+               Flytt liten disk 
+                <div id="smallDiskButtons">
+                    <button onclick="moveSmallDisk(0)">venstre tårn</button>
+                    <button onclick="moveSmallDisk(1)">midttårn</button>
+                    <button onclick="moveSmallDisk(2)">høyre tårn</button>
+                </div>
+                <br/>
+                Flytt medium disk
+                <div id="mediumDiskButtons">
+                    <button onclick="moveMediumDisk(0)">venstre tårn</button>
+                    <button onclick="moveMediumDisk(1)">midttårn</button>
+                    <button onclick="moveMediumDisk(2)">høyre tårn</button>
+                </div>
+                <br/>
+                Flytt stor disk
+                <div id="largeDiskButtons">
+                    <button onclick="moveLargeDisk(0)">venstre tårn</button>
+                    <button onclick="moveLargeDisk(1)">midttårn</button>
+                    <button onclick="moveLargeDisk(2)">høyre tårn</button>
+                </div>
+                <br/>
+            `;
+            // updateButtons("small", 1, "Midttårn");
+            // updateButtons("small", 2, "Høyre tårn");
+            }
+
+            // controller
+            function moveSmallDisk(toTowerIndex) {
+                smallDiskTowerIndex = toTowerIndex;
+                document.getElementById("small").remove();
+                if(toTowerIndex == 1){
+                    document.getElementById("secondTower").innerHTML += smallDisk;
+                    // updateButtons("small", 0, "Venstre tårn");
+                    // updateButtons("small", 2, "Høyre tårn");
+                    // updateButton("medium", 2, "Høyre tårn")
+                }
+                else if(toTowerIndex == 2){
+                    document.getElementById("thirdTower").innerHTML += smallDisk;
+                    // updateButtons("small", 1, "Midttårn");
+                    // updateButtons("small", 0, "Venstre tårn");
+                    // updateButton("medium", 1, "Midttårn")
+                }
+                else{
+                    document.getElementById("firstTower").innerHTML += smallDisk;
+                    // updateButtons("small", 1, "Midttårn");
+                    // updateButtons("small", 2, "Høyre tårn");
+                    // updateButton("medium", 1, "Midttårn")
+                }
+            }
+
+            function moveMediumDisk(toTowerIndex) {
+                mediumDiskTowerIndex = toTowerIndex;
+
+                //TEMPORARY VARIABLES
+                // let left =
+                // `<button onclick="moveMediumDisk(1)" id="buttonMediumMiddle">midttårn</button>
+                // <button onclick="moveMediumDisk(2)" id="buttonMediumRight">høyre tårn</button>`;
+                // let middle =
+                // `<button onclick="moveMediumDisk(0)" id="buttonMediumLeft">venstre tårn</button>
+                // <button onclick="moveMediumDisk(2)" id="buttonMediumRight">høyre tårn</button>`;
+                // let right =
+                // `<button onclick="moveMediumDisk(0)" id="buttonMediumLeft">venstre tårn</button>
+                // <button onclick="moveMediumDisk(1)" id="buttonMediumMiddle">midttårn</button>`;
+
+                //Would look like this: document.getElementById("mediumDiskButtons").innerHTML = left;
+                
+                if(toTowerIndex == 1 && smallDiskTowerIndex != 1){
+                    document.getElementById("medium").remove();
+                    document.getElementById("secondTower").innerHTML += mediumDisk;
+                    // updateButtons("medium", 0, "Venstre tårn"); 
+                    // updateButtons("medium", 2, "Høyre tårn"); 
+                }
+                else if(toTowerIndex == 2 && smallDiskTowerIndex != 2){
+                    document.getElementById("medium").remove();
+                    document.getElementById("thirdTower").innerHTML += mediumDisk;
+                    // updateButtons("medium", 0, "Venstre tårn"); 
+                    // updateButtons("medium", 1, "Midttårn"); 
+                }
+                else if(toTowerIndex == 0 && smallDiskTowerIndex != 0){
+                    document.getElementById("medium").remove();
+                    document.getElementById("firstTower").innerHTML += mediumDisk;
+                    // updateButtons("medium", 1, "Midttårn"); 
+                    // updateButtons("medium", 2, "Høyre tårn");
+                }
+            }
+
+            function moveLargeDisk(toTowerIndex) {
+                largeDiskTowerIndex = toTowerIndex;
+                if(toTowerIndex == 1 && smallDiskTowerIndex != 1 && mediumDiskTowerIndex !=1){
+                    document.getElementById("large").remove();
+                    document.getElementById("secondTower").innerHTML += largeDisk;
+                    // updateButtons("large", 0, "Venstre tårn"); 
+                    // updateButtons("large", 2, "Høyre tårn");
+                }
+                else if(toTowerIndex == 2 && smallDiskTowerIndex != 2 && mediumDiskTowerIndex !=2){
+                    document.getElementById("large").remove();
+                    document.getElementById("thirdTower").innerHTML += largeDisk;
+                    // updateButtons("large", 0, "Venstre tårn"); 
+                    // updateButtons("large", 1, "Midttårn");
+                }
+                else if(toTowerIndex == 0 && smallDiskTowerIndex != 0 && mediumDiskTowerIndex !=0){
+                    document.getElementById("large").remove();
+                    document.getElementById("firstTower").innerHTML += largeDisk;
+                    // updateButtons("large", 1, "Midttårn"); 
+                    // updateButtons("large", 2, "Høyre tårn");
+                }
+            }
+
+            // example calls, not correct
+            // updateButtons('small', 0,'left');
+            // updateButtons('medium', 1, 'right');
+            // updateButtons('large', 2, 'middle');
+            // small, index
+            function updateButtons(id, index, text){
+
+                //Change id-s if we are planning to redraw the whole block. Also, we need a logic here. 
+                return /*HTML*/`
+                  <div id="${id}DiskButtons">
+                    Flytt ${id} disk til
+                    <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
+                    <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
+                    <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
+                    </div>
+                `; 
+            }
+
+            document.body.innerHTML += `
+            <h4> Oppgave: </h4>
+            Disse oppgavene er ment å løses med kun funksjoner, variabler, operatorer, if-setninger og MVC. Man trenger
+            ikke bruke løkker eller lister.
+            <ol>
+                <li>
+                    Studer spillet her: <a href="https://www.mathsisfun.com/games/towerofhanoi.html">mathsisfun.com/games/towerofhanoi.html</a>
+                    og sørg for at dere forstår reglene. 
+                </li>
+                <li>
+                    Sørg for at <tt>updateView()</tt> tegner opp diskene ut fra innholdet av variablene i modellen.
+                    Merk at pga <tt>display: flex</tt> og <tt>flex-direction: column-reverse</tt> må dere legge til 
+                    diskene i motsatt rekkefølge av ellers. Den siste taggen inne i hvert tårn kommer øverst
+                </li>
+                <li>
+                    Implementer aller enkleste versjon av controller-funksjonene, nemlig å flytte hver disk uten å sjekke om det er lov
+                    eller ikke. Sjekk at det virker før dere går videre. 
+                </li>
+                <li>
+                    Implementer så reglene. Du kan ikke flytte en disk til et tårn om det alt ligger en disk der som er mindre.                
+                </li>
+                <li>
+                    Skjul alltid knappene som flytter en disk dit den allerede er. Skjul også knappene som er ulovlige å utføre.
+                </li>
+                <li>
+                    Vis en melding på skjermen hvis spillet er løst, det vil si at alle diskene er på høyre tårn. Vis i det
+                    tilfellet en knapp for å starte spillet på nytt. 
+                </li>
+            </ol>
+        `;
+
+            /*
+    To do:
+    - Move disc between towers
+            - Give each tower an individual id
+            - Same goes for disc
+    - Checker if we are allowed to move disc
+
+    Eventually:
+    - Remove buttons, use disks as buttons
+    - Make prettier?
+    */
+        </script>
+    </body>
+</html>
