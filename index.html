@@ -1,217 +1,389 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Tower of Hanoi - team 5</title>
-        <style>
-            .game-container {
-                display: flex;
-                justify-content: space-between;
-                margin: 0 auto;
-                max-width: 600px;
-            }
 
-            .tower-container {
-                position: relative;
-            }
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tower of Hanoi - team 5</title>
+    <style>
+        .game-container {
+            display: flex;
+            justify-content: space-between;
+            margin: 0 auto;
+            max-width: 600px;
+        }
 
-            .tower {
-                width: 100px;
-                height: 120px;
-                display: flex;
-                flex-direction: column-reverse;
-                align-items: center;
-                border-bottom: 8px solid darkred;
-            }
+        .tower-container {
+            position: relative;
+        }
 
-            .tower-container::before {
-                content: "";
-                position: absolute;
-                bottom: 0;
-                left: 50%;
-                transform: translateX(-50%);
-                width: 8px;
-                height: 120px;
-                z-index: -10;
-                background-color: darkred;
-            }
+        .tower {
+            width: 100px;
+            height: 120px;
+            display: flex;
+            flex-direction: column-reverse;
+            align-items: center;
+            border-bottom: 8px solid #295f4e;
+        }
 
-            .disk {
-                width: 20px;
-                height: 20px;
-                background-color: blue;
-                border: 4px solid gray;
-                margin-bottom: 5px;
-            }
-        </style>
-    </head>
-    <body>
-        <div id="app"></div>
+        .tower-container::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 8px;
+            height: 140px;
+            z-index: -10;
+            background-color: #295f4e;
+        }
 
-        <script>
-            // model
-            //   hvor er diskene, 0 = venstre tårn, 1 = midten, 2 = høyre
-            //   alle starter til venstre
-            let smallDisk = `<div class="disk" id = "small" style="width: 30px"></div>`;
-            let mediumDisk = `<div class="disk" id = "medium" style="width: 50px"></div>`;
-            let largeDisk = `<div class="disk" id = "large" style="width: 70px"></div>`;
+        .disk {
+            background-color: #edf7fa;
+            border: 1px solid black;
+            border-radius: 50%;
+        }
 
-            let smallDiskTowerIndex = 0;
-            let mediumDiskTowerIndex = 0;
-            let largeDiskTowerIndex = 0;
+        .face{
+            width: 30px;
+        }
 
-            // view
-            updateView();
-            function updateView() {
-                document.getElementById("app").innerHTML = /*HTML*/ `
+        .buttons{
+            width: 35px;
+            height: 35px;
+            margin-left: 3px;
+            margin-top: 2px;
+        }
+        .bottomButtons{
+            width: 40px;
+            height: 40px;
+            margin-left: 5px;
+            margin-top: 2px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+
+    <script>
+        // model
+        //   hvor er diskene, 0 = venstre tårn, 1 = midten, 2 = høyre
+        //   alle starter til venstre
+        let smallDisk = `<div class="disk" id="Small" style="width: 25px; height: 25px"><img class="face" src="img/faceSnowMan.png"/></div>`;
+        let mediumDisk = `<div class="disk" id="Medium" style="width: 40px; height: 40px"><img class="buttons" src="img/scarfAndButtonsSnowMan.png"/></div>`;
+        let largeDisk = `<div class="disk" id="Large" style="width: 50px; height: 50px"><img class="bottomButtons" src="img/bottomButtonsSnowMan.png"/></div>`;
+        let firstTower = `${largeDisk}${mediumDisk}${smallDisk}`;
+        let secondTower = ``;
+        let thirdTower = ``;
+
+        // let smallDiskButtonsHTML = getButtonsHTML('Small', 1, 'midt tårn') + getButtonsHTML('Small', 2, 'høyre tårn');
+        // let mediumDiskButtonsHTML = getButtonsHTML('Medium', 1, 'midt tårn') + getButtonsHTML('Medium', 2, 'høyre tårn');
+        // let largeDiskButtonsHTML = getButtonsHTML('Large', 1, 'midt tårn') + getButtonsHTML('Large', 2, 'høyre tårn') ;
+
+        let smallDiskTowerIndex = 0;
+        let mediumDiskTowerIndex = 0;
+        let largeDiskTowerIndex = 0;
+
+        let moveCount = 0;
+        let winCondition;
+        
+        let smLeftButton = false; 
+        let smMiddleButton = true; 
+        let smRightButton = true; 
+        let medLeftButton = false; 
+        let medMiddleButton = false; 
+        let medRightButton = false; 
+        let larLeftButton = false; 
+        let larMiddleButton = false; 
+        let larRightButton = false; 
+        
+        // view
+        updateView();
+        function updateView() {
+            document.getElementById("app").innerHTML = /*HTML*/ `
                 <div class="game-container">
                     <div class="tower-container">
                             <div class="tower" id = "firstTower">
-                            ${largeDisk}
-                            ${mediumDisk}
-                            ${smallDisk}                    
+                            ${firstTower}
                         </div>
                     </div>
                     <div class="tower-container">
                         <div class="tower" id = "secondTower">
-                            
+                            ${secondTower}
                          </div>
                     </div>
                     <div class="tower-container">
-                        <div class="tower" id = "thirdTower">                    
+                        <div class="tower" id = "thirdTower">
+                            ${thirdTower}
                         </div>
                     </div>
-                </div>
-                
-                <br>
-               Flytt liten disk 
+                </div><br/>
+
+                Flytt liten disk til
                 <div id="smallDiskButtons">
-                    <button onclick="moveSmallDisk(0)">venstre tårn</button>
-                    <button onclick="moveSmallDisk(1)">midttårn</button>
-                    <button onclick="moveSmallDisk(2)">høyre tårn</button>
-                </div>
-                <br/>
-                Flytt medium disk
+                    ${smLeftButton ? `<button onclick='moveSmallDisk(0)'>Move to left tower</button>` : ``}
+                    ${smMiddleButton ? `<button onclick='moveSmallDisk(1)'>Move to middle tower</button>` : ``}
+                    ${smRightButton ? `<button onclick='moveSmallDisk(2)'>Move to right tower</button>` : ``}
+                    </div><br/>
+                    Flytt medium disk til
                 <div id="mediumDiskButtons">
-                    <button onclick="moveMediumDisk(0)">venstre tårn</button>
-                    <button onclick="moveMediumDisk(1)">midttårn</button>
-                    <button onclick="moveMediumDisk(2)">høyre tårn</button>
-                </div>
-                <br/>
-                Flytt stor disk
+                    ${medLeftButton ? `<button onclick='moveMediumDisk(0)'>Move to left tower</button>` : ``}
+                    ${medMiddleButton ? `<button onclick='moveMediumDisk(1)'>Move to middle tower</button>` : ``}
+                    ${medRightButton ? `<button onclick='moveMediumDisk(2)'>Move to right tower</button>` : ``}
+                    </div><br/>
+                    Flytt stor disk til
                 <div id="largeDiskButtons">
-                    <button onclick="moveLargeDisk(0)">venstre tårn</button>
-                    <button onclick="moveLargeDisk(1)">midttårn</button>
-                    <button onclick="moveLargeDisk(2)">høyre tårn</button>
-                </div>
-                <br/>
-            `;
-            // updateButtons("small", 1, "Midttårn");
-            // updateButtons("small", 2, "Høyre tårn");
-            }
-
-            // controller
-            function moveSmallDisk(toTowerIndex) {
-                smallDiskTowerIndex = toTowerIndex;
-                document.getElementById("small").remove();
-                if(toTowerIndex == 1){
-                    document.getElementById("secondTower").innerHTML += smallDisk;
-                    // updateButtons("small", 0, "Venstre tårn");
-                    // updateButtons("small", 2, "Høyre tårn");
-                    // updateButton("medium", 2, "Høyre tårn")
-                }
-                else if(toTowerIndex == 2){
-                    document.getElementById("thirdTower").innerHTML += smallDisk;
-                    // updateButtons("small", 1, "Midttårn");
-                    // updateButtons("small", 0, "Venstre tårn");
-                    // updateButton("medium", 1, "Midttårn")
-                }
-                else{
-                    document.getElementById("firstTower").innerHTML += smallDisk;
-                    // updateButtons("small", 1, "Midttårn");
-                    // updateButtons("small", 2, "Høyre tårn");
-                    // updateButton("medium", 1, "Midttårn")
-                }
-            }
-
-            function moveMediumDisk(toTowerIndex) {
-                mediumDiskTowerIndex = toTowerIndex;
-
-                //TEMPORARY VARIABLES
-                // let left =
-                // `<button onclick="moveMediumDisk(1)" id="buttonMediumMiddle">midttårn</button>
-                // <button onclick="moveMediumDisk(2)" id="buttonMediumRight">høyre tårn</button>`;
-                // let middle =
-                // `<button onclick="moveMediumDisk(0)" id="buttonMediumLeft">venstre tårn</button>
-                // <button onclick="moveMediumDisk(2)" id="buttonMediumRight">høyre tårn</button>`;
-                // let right =
-                // `<button onclick="moveMediumDisk(0)" id="buttonMediumLeft">venstre tårn</button>
-                // <button onclick="moveMediumDisk(1)" id="buttonMediumMiddle">midttårn</button>`;
-
-                //Would look like this: document.getElementById("mediumDiskButtons").innerHTML = left;
-                
-                if(toTowerIndex == 1 && smallDiskTowerIndex != 1){
-                    document.getElementById("medium").remove();
-                    document.getElementById("secondTower").innerHTML += mediumDisk;
-                    // updateButtons("medium", 0, "Venstre tårn"); 
-                    // updateButtons("medium", 2, "Høyre tårn"); 
-                }
-                else if(toTowerIndex == 2 && smallDiskTowerIndex != 2){
-                    document.getElementById("medium").remove();
-                    document.getElementById("thirdTower").innerHTML += mediumDisk;
-                    // updateButtons("medium", 0, "Venstre tårn"); 
-                    // updateButtons("medium", 1, "Midttårn"); 
-                }
-                else if(toTowerIndex == 0 && smallDiskTowerIndex != 0){
-                    document.getElementById("medium").remove();
-                    document.getElementById("firstTower").innerHTML += mediumDisk;
-                    // updateButtons("medium", 1, "Midttårn"); 
-                    // updateButtons("medium", 2, "Høyre tårn");
-                }
-            }
-
-            function moveLargeDisk(toTowerIndex) {
-                largeDiskTowerIndex = toTowerIndex;
-                if(toTowerIndex == 1 && smallDiskTowerIndex != 1 && mediumDiskTowerIndex !=1){
-                    document.getElementById("large").remove();
-                    document.getElementById("secondTower").innerHTML += largeDisk;
-                    // updateButtons("large", 0, "Venstre tårn"); 
-                    // updateButtons("large", 2, "Høyre tårn");
-                }
-                else if(toTowerIndex == 2 && smallDiskTowerIndex != 2 && mediumDiskTowerIndex !=2){
-                    document.getElementById("large").remove();
-                    document.getElementById("thirdTower").innerHTML += largeDisk;
-                    // updateButtons("large", 0, "Venstre tårn"); 
-                    // updateButtons("large", 1, "Midttårn");
-                }
-                else if(toTowerIndex == 0 && smallDiskTowerIndex != 0 && mediumDiskTowerIndex !=0){
-                    document.getElementById("large").remove();
-                    document.getElementById("firstTower").innerHTML += largeDisk;
-                    // updateButtons("large", 1, "Midttårn"); 
-                    // updateButtons("large", 2, "Høyre tårn");
-                }
-            }
-
-            // example calls, not correct
-            // updateButtons('small', 0,'left');
-            // updateButtons('medium', 1, 'right');
-            // updateButtons('large', 2, 'middle');
-            // small, index
-            function updateButtons(id, index, text){
-
-                //Change id-s if we are planning to redraw the whole block. Also, we need a logic here. 
-                return /*HTML*/`
-                  <div id="${id}DiskButtons">
-                    Flytt ${id} disk til
-                    <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
-                    <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
-                    <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
+                    ${larLeftButton ? `<button onclick='moveLargeDisk(0)'>Move to left tower</button>` : ``}
+                    ${larMiddleButton ? `<button onclick='moveLargeDisk(1)'>Move to middle tower</button>` : ``}
+                    ${larRightButton ? `<button onclick='moveLargeDisk(2)'>Move to right tower</button>` : ``}
                     </div>
-                `; 
+                    <br/>
+                    <div>Antall trekk: ${moveCount}</div>
+                    <div>${winCondition = checkWinCondition() ?? ''}</div>
+                    `;
+                }
+                // ${mediumDiskButtonsHTML}
+                // ${smallDiskButtonsHTML}
+                // ${largeDiskButtonsHTML}
+                    
+        // controller
+        function moveSmallDisk(toTowerIndex) {
+            // let left = getButtonsHTML('Small', 0, 'left');
+            // let middle = getButtonsHTML('Small', 1, 'middle');
+            // let right = getButtonsHTML('Small', 2, 'right');
+
+            if (toTowerIndex == 0) {
+                smallDiskTowerIndex = toTowerIndex;
+                secondTower = secondTower.replace(smallDisk, "");
+                thirdTower = thirdTower.replace(smallDisk, "");
+                firstTower += smallDisk;
+                smLeftButton = false;
+                smMiddleButton = true;
+                smRightButton = true;
+                changeChoiceButtons();
+                medLeftButton = false;
+                // smallDiskButtonsHTML = middle;
+                // smallDiskButtonsHTML += right;
+                moveCount++;
+            }
+            else if (toTowerIndex == 1) {
+                smallDiskTowerIndex = toTowerIndex;
+                firstTower = firstTower.replace(smallDisk, "");
+                thirdTower = thirdTower.replace(smallDisk, "");
+                secondTower += smallDisk;
+                smLeftButton = true;
+                smMiddleButton = false;
+                smRightButton = true;
+                changeChoiceButtons();
+                medMiddleButton = false;
+                // smallDiskButtonsHTML = left;
+                // smallDiskButtonsHTML += right;
+                moveCount++;
+            }
+            else if (toTowerIndex == 2) {
+                smallDiskTowerIndex = toTowerIndex;
+                firstTower = firstTower.replace(smallDisk, "");
+                secondTower = secondTower.replace(smallDisk, "");
+                thirdTower += smallDisk;
+                smLeftButton = true;
+                smMiddleButton = true;
+                smRightButton = false;
+                changeChoiceButtons();
+                medRightButton = false;
+                // smallDiskButtonsHTML = left;
+                // smallDiskButtonsHTML += middle;
+                moveCount++;
+            }
+        
+            updateView();
+        }
+
+        function changeChoiceButtons() {
+            medLeftButton = false;
+            medMiddleButton = false;
+            medRightButton = false;
+            larLeftButton = false;
+            larMiddleButton = false;
+            larRightButton = false;
+
+            if (mediumDiskTowerIndex == 0) {
+                medLeftButton = false;
+                medMiddleButton = true;
+                medRightButton = true;
+            } else if (mediumDiskTowerIndex == 1) {
+                medLeftButton = true;
+                medMiddleButton = false;
+                medRightButton = true;
+            } else if (mediumDiskTowerIndex == 2) {
+                medLeftButton = true;
+                medMiddleButton = true;
+                medRightButton = false;
+            }
+            
+            if (largeDiskTowerIndex == 0) {
+                larLeftButton = false;
+                larMiddleButton = true;
+                larRightButton = true;
+            } else if (largeDiskTowerIndex == 1) {
+                larLeftButton = true;
+                larMiddleButton = false;
+                larRightButton = true;
+            } else if (largeDiskTowerIndex == 2) {
+                larLeftButton = true;
+                larMiddleButton = true;
+                larRightButton = false;
             }
 
-            document.body.innerHTML += `
+            if (smallDiskTowerIndex == mediumDiskTowerIndex) {
+                medLeftButton = false;
+                medMiddleButton = false;
+                medRightButton = false;
+            }
+            if (smallDiskTowerIndex == largeDiskTowerIndex || mediumDiskTowerIndex == largeDiskTowerIndex) {
+                larLeftButton = false;
+                larMiddleButton = false;
+                larRightButton = false;
+            }
+            
+            if (smallDiskTowerIndex == 0) {
+                medLeftButton = false;
+                larLeftButton = false;
+            } else if (smallDiskTowerIndex == 1) {
+                medMiddleButton = false;
+                larMiddleButton = false;
+            } else if (smallDiskTowerIndex == 2) {
+                medRightButton = false;
+                larRightButton = false;
+            }
+            
+            if (mediumDiskTowerIndex == 0) {
+                larLeftButton = false;
+            } else if (mediumDiskTowerIndex == 1) {
+                larMiddleButton = false;
+            } else if (mediumDiskTowerIndex == 2) {
+                larRightButton = false;
+            }
+        }
+
+        function moveMediumDisk(toTowerIndex) {
+            // let left = getButtonsHTML('Medium', 0, 'left');
+            // let middle = getButtonsHTML('Medium', 1, 'middle');
+            // let right = getButtonsHTML('Medium', 2, 'right');
+
+            if (!hasDiskAbove('medium') && !isDiskLarger('medium', toTowerIndex) && toTowerIndex == 0) {
+                mediumDiskTowerIndex = toTowerIndex;
+                secondTower = secondTower.replace(mediumDisk, "");
+                thirdTower = thirdTower.replace(mediumDisk, "");
+                firstTower += mediumDisk;
+                changeChoiceButtons();
+                // mediumDiskButtonsHTML = middle;
+                // mediumDiskButtonsHTML += right;
+                moveCount++;
+            }
+            else if (!hasDiskAbove('medium') && !isDiskLarger('medium', toTowerIndex) && toTowerIndex == 1) {
+                mediumDiskTowerIndex = toTowerIndex;
+                firstTower = firstTower.replace(mediumDisk, "");
+                thirdTower = thirdTower.replace(mediumDisk, "");
+                secondTower += mediumDisk;
+                changeChoiceButtons();
+                // mediumDiskButtonsHTML = left;
+                // mediumDiskButtonsHTML += right;
+                moveCount++;
+            }
+            else if (!hasDiskAbove('medium') && !isDiskLarger('medium', toTowerIndex) && toTowerIndex == 2) {
+                mediumDiskTowerIndex = toTowerIndex;
+                firstTower = firstTower.replace(mediumDisk, "");
+                secondTower = secondTower.replace(mediumDisk, "");
+                thirdTower += mediumDisk;
+                changeChoiceButtons();
+                // mediumDiskButtonsHTML = left;
+                // mediumDiskButtonsHTML += middle;
+                moveCount++;
+            }
+            updateView();
+        }
+
+        function moveLargeDisk(toTowerIndex) {
+            // let left = getButtonsHTML('Large', 0, 'left');
+            // let middle = getButtonsHTML('Large', 1, 'middle');
+            // let right = getButtonsHTML('Large', 2, 'right');
+            
+            if (!hasDiskAbove('large') && !isDiskLarger('large', toTowerIndex) && toTowerIndex == 0) {
+                largeDiskTowerIndex = toTowerIndex;
+                secondTower = secondTower.replace(largeDisk, "");
+                thirdTower = thirdTower.replace(largeDisk, "");
+                firstTower += largeDisk;
+                changeChoiceButtons();
+                // largeDiskButtonsHTML = middle;
+                // largeDiskButtonsHTML += right;
+                moveCount++;
+            }
+            else if (!hasDiskAbove('large') && !isDiskLarger('large', toTowerIndex) && toTowerIndex == 1) {
+                largeDiskTowerIndex = toTowerIndex;
+                firstTower = firstTower.replace(largeDisk, "");
+                thirdTower = thirdTower.replace(largeDisk, "");
+                secondTower += largeDisk;
+                changeChoiceButtons();
+                // largeDiskButtonsHTML = left;
+                // largeDiskButtonsHTML += right;
+                moveCount++;
+            }
+            else if (!hasDiskAbove('large') && !isDiskLarger('large', toTowerIndex) && toTowerIndex == 2) {
+                largeDiskTowerIndex = toTowerIndex;
+                firstTower = firstTower.replace(largeDisk, "");
+                secondTower = secondTower.replace(largeDisk, "");
+                thirdTower += largeDisk;
+                changeChoiceButtons();
+                // largeDiskButtonsHTML = left;
+                // largeDiskButtonsHTML += middle;
+                moveCount++;
+            }
+            updateView();
+        }
+
+        function hasDiskAbove(input) {
+            if (input == 'large' && largeDiskTowerIndex == smallDiskTowerIndex && largeDiskTowerIndex == mediumDiskTowerIndex) {
+                return true;
+            } else if (input == 'medium' && smallDiskTowerIndex == mediumDiskTowerIndex) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        function isDiskLarger(input, newPosition) {
+            //here we check if on the tower that we are planning to move our large piece, exist medium or small piece. 
+            // else if (hasDiskAbove('large') && toTowerIndex == 2 && smallDiskTowerIndex != 2 && mediumDiskTowerIndex != 2)
+            //what kind of corner cases we could recieve here? 
+            if (input == 'large' && smallDiskTowerIndex == newPosition && mediumDiskTowerIndex == newPosition) {
+                return true;
+                //
+            } else if (input == 'medium' && smallDiskTowerIndex == newPosition) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        // example calls, not correct
+        // updateButtons('small', 0,'left');
+        // updateButtons('medium', 1, 'right');
+        // updateButtons('large', 2, 'middle');
+        // small, index
+        // function getButtonsHTML(id, index, text) {
+        //     return /*HTML*/`
+        //         <button onclick="move${id}Disk(${index})">Move ${id} ${text}</button>
+        //     `;
+        // }
+
+        function checkWinCondition(){
+            if(smallDiskTowerIndex == 2 && mediumDiskTowerIndex == 2 && largeDiskTowerIndex == 2){
+                return /*HTML*/`<div>Gratulerer! Du flytta Majones fra venstre til høyre, applaus osv.</div>`;
+            }
+        }
+
+        document.body.innerHTML += `
             <h4> Oppgave: </h4>
             Disse oppgavene er ment å løses med kun funksjoner, variabler, operatorer, if-setninger og MVC. Man trenger
             ikke bruke løkker eller lister.
@@ -242,17 +414,18 @@
             </ol>
         `;
 
-            /*
-    To do:
-    - Move disc between towers
-            - Give each tower an individual id
-            - Same goes for disc
-    - Checker if we are allowed to move disc
+        /*
+        To do:
+        - Move disc between towers
+                - Give each tower an individual id
+                - Same goes for disc
+        - Checker if we are allowed to move disc
 
-    Eventually:
-    - Remove buttons, use disks as buttons
-    - Make prettier?
-    */
-        </script>
-    </body>
+        Eventually:
+        - Remove buttons, use disks as buttons
+        - Make prettier?
+        */
+    </script>
+</body>
+
 </html>
