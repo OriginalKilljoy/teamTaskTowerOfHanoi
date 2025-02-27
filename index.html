@@ -11,6 +11,8 @@
             justify-content: space-between;
             margin: 0 auto;
             max-width: 600px;
+            padding-top: 40px;
+
         }
 
         .tower-container {
@@ -24,6 +26,7 @@
             flex-direction: column-reverse;
             align-items: center;
             border-bottom: 8px solid #295f4e;
+
         }
 
         .tower-container::before {
@@ -60,6 +63,41 @@
             margin-left: 5px;
             margin-top: 2px;
         }
+
+        button {
+            display: inline;
+            background-color: #295f4e;
+
+            border-radius: 50%;
+            width: 100px;
+            min-height: 50px;
+            color: #edf7fa;
+            /* margin-left: 3px;
+            margin-top: 2px; */
+        }
+
+        .bottomButtons {
+            width: 40px;
+            height: 40px;
+            margin-left: 5px;
+            margin-top: 2px;
+        }
+
+        button:hover {
+            background-color: #48997f;
+            color: white;
+            border: 2px snow;
+        }
+
+        #tst {
+            /*https://projects.verou.me/css3patterns/#diagonal-stripes*/
+            font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: black;
+            background-color: gray;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 35px, rgba(255, 255, 255, .5) 35px, rgba(255, 255, 255, .5) 70px);
+        }
     </style>
 </head>
 
@@ -87,17 +125,17 @@
 
         let moveCount = 0;
         let winCondition;
-        
-        let smLeftButton = false; 
-        let smMiddleButton = true; 
-        let smRightButton = true; 
-        let medLeftButton = false; 
-        let medMiddleButton = false; 
-        let medRightButton = false; 
-        let larLeftButton = false; 
-        let larMiddleButton = false; 
-        let larRightButton = false; 
-        
+
+        let smLeftButton = false;
+        let smMiddleButton = true;
+        let smRightButton = true;
+        let medLeftButton = false;
+        let medMiddleButton = false;
+        let medRightButton = false;
+        let larLeftButton = false;
+        let larMiddleButton = false;
+        let larRightButton = false;
+
         // view
         updateView();
         function updateView() {
@@ -120,19 +158,20 @@
                     </div>
                 </div><br/>
 
-                Flytt liten disk til
+                <div id = "tst">
+                    Move small mayo:
                 <div id="smallDiskButtons">
                     ${smLeftButton ? `<button onclick='moveSmallDisk(0)'>Move to left tower</button>` : ``}
                     ${smMiddleButton ? `<button onclick='moveSmallDisk(1)'>Move to middle tower</button>` : ``}
                     ${smRightButton ? `<button onclick='moveSmallDisk(2)'>Move to right tower</button>` : ``}
                     </div><br/>
-                    Flytt medium disk til
+                    Move medium mayo:
                 <div id="mediumDiskButtons">
                     ${medLeftButton ? `<button onclick='moveMediumDisk(0)'>Move to left tower</button>` : ``}
                     ${medMiddleButton ? `<button onclick='moveMediumDisk(1)'>Move to middle tower</button>` : ``}
                     ${medRightButton ? `<button onclick='moveMediumDisk(2)'>Move to right tower</button>` : ``}
                     </div><br/>
-                    Flytt stor disk til
+                    Move extra-large mayo:
                 <div id="largeDiskButtons">
                     ${larLeftButton ? `<button onclick='moveLargeDisk(0)'>Move to left tower</button>` : ``}
                     ${larMiddleButton ? `<button onclick='moveLargeDisk(1)'>Move to middle tower</button>` : ``}
@@ -141,12 +180,13 @@
                     <br/>
                     <div>Antall trekk: ${moveCount}</div>
                     <div>${winCondition = checkWinCondition() ?? ''}</div>
+                    </div>
                     `;
-                }
-                // ${mediumDiskButtonsHTML}
-                // ${smallDiskButtonsHTML}
-                // ${largeDiskButtonsHTML}
-                    
+        }
+        // ${mediumDiskButtonsHTML}
+        // ${smallDiskButtonsHTML}
+        // ${largeDiskButtonsHTML}
+
         // controller
         function moveSmallDisk(toTowerIndex) {
             // let left = getButtonsHTML('Small', 0, 'left');
@@ -195,7 +235,7 @@
                 // smallDiskButtonsHTML += middle;
                 moveCount++;
             }
-        
+
             updateView();
         }
 
@@ -206,6 +246,11 @@
             larLeftButton = false;
             larMiddleButton = false;
             larRightButton = false;
+
+            //win condition = remove all buttons. 
+            if (smallDiskTowerIndex == 2 && mediumDiskTowerIndex == 2 && largeDiskTowerIndex == 2) {
+                smLeftButton = smMiddleButton = smRightButton = false;
+            }
 
             if (mediumDiskTowerIndex == 0) {
                 medLeftButton = false;
@@ -220,7 +265,7 @@
                 medMiddleButton = true;
                 medRightButton = false;
             }
-            
+
             if (largeDiskTowerIndex == 0) {
                 larLeftButton = false;
                 larMiddleButton = true;
@@ -245,7 +290,7 @@
                 larMiddleButton = false;
                 larRightButton = false;
             }
-            
+
             if (smallDiskTowerIndex == 0) {
                 medLeftButton = false;
                 larLeftButton = false;
@@ -256,7 +301,7 @@
                 medRightButton = false;
                 larRightButton = false;
             }
-            
+
             if (mediumDiskTowerIndex == 0) {
                 larLeftButton = false;
             } else if (mediumDiskTowerIndex == 1) {
@@ -308,7 +353,7 @@
             // let left = getButtonsHTML('Large', 0, 'left');
             // let middle = getButtonsHTML('Large', 1, 'middle');
             // let right = getButtonsHTML('Large', 2, 'right');
-            
+
             if (!hasDiskAbove('large') && !isDiskLarger('large', toTowerIndex) && toTowerIndex == 0) {
                 largeDiskTowerIndex = toTowerIndex;
                 secondTower = secondTower.replace(largeDisk, "");
@@ -351,7 +396,7 @@
                 return false;
             }
         }
-        
+
         function isDiskLarger(input, newPosition) {
             //here we check if on the tower that we are planning to move our large piece, exist medium or small piece. 
             // else if (hasDiskAbove('large') && toTowerIndex == 2 && smallDiskTowerIndex != 2 && mediumDiskTowerIndex != 2)
@@ -377,9 +422,12 @@
         //     `;
         // }
 
-        function checkWinCondition(){
-            if(smallDiskTowerIndex == 2 && mediumDiskTowerIndex == 2 && largeDiskTowerIndex == 2){
-                return /*HTML*/`<div>Gratulerer! Du flytta Majones fra venstre til høyre, applaus osv.</div>`;
+        function checkWinCondition() {
+            if (smallDiskTowerIndex == 2 && mediumDiskTowerIndex == 2 && largeDiskTowerIndex == 2) {
+                return /*HTML*/`<div>Gratulerer! Du flytta Majones fra venstre til høyre, applaus osv.
+                    <br/>
+                    <button onclick='location.reload()'>Restart game!</button>
+                    </div>`;
             }
         }
 
@@ -413,18 +461,6 @@
                 </li>
             </ol>
         `;
-
-        /*
-        To do:
-        - Move disc between towers
-                - Give each tower an individual id
-                - Same goes for disc
-        - Checker if we are allowed to move disc
-
-        Eventually:
-        - Remove buttons, use disks as buttons
-        - Make prettier?
-        */
     </script>
 </body>
 
