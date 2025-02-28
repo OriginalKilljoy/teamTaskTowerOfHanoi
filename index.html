@@ -233,17 +233,16 @@
             larLeftButton = false;
             larMiddleButton = false;
             larRightButton = false;
-
-            // win condition = remove all buttons.
-            if (smallDiskTowerIndex == 2 && mediumDiskTowerIndex == 2 && largeDiskTowerIndex == 2) {
-                smLeftButton = smMiddleButton = smRightButton = false;
-            }
-
+            
             showSmallButtons();
             showMediumButtons();
             showLargeButtons();
             checkForDiskAbove();
             overwriteButtons();
+            // win condition = remove all buttons.
+            if (smallDiskTowerIndex == 2 && mediumDiskTowerIndex == 2 && largeDiskTowerIndex == 2) {
+                smLeftButton = smMiddleButton = smRightButton = false;
+            }
         }
 
         function showSmallButtons() {
