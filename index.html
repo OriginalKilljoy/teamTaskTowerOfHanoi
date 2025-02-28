@@ -194,25 +194,21 @@
                 secondTower = secondTower.replace(disk, "");
                 thirdTower = thirdTower.replace(disk, "");
                 firstTower += disk;
-                changeChoiceButtons();
-                moveCount++;
             }
             else if (toTowerIndex == 1) {
                 changeDiskIndex(disk, toTowerIndex);
                 firstTower = firstTower.replace(disk, "");
                 thirdTower = thirdTower.replace(disk, "");
                 secondTower += disk;
-                changeChoiceButtons();
-                moveCount++;
             }
             else if (toTowerIndex == 2) {
                 changeDiskIndex(disk, toTowerIndex);
                 firstTower = firstTower.replace(disk, "");
                 secondTower = secondTower.replace(disk, "");
                 thirdTower += disk;
-                changeChoiceButtons();
-                moveCount++;
             }
+            changeChoiceButtons();
+            moveCount++;
             updateView();
         }
 
@@ -227,6 +223,7 @@
         }
 
         function changeChoiceButtons() {
+            // set all to false
             smLeftButton = false;
             smMiddleButton = false;
             smRightButton = false;
